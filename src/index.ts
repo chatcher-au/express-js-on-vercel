@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.CH_APP_SUPABASE_URL,
+  process.env.CH_APP_SUPABASE_ANON_KEY
 )
 
 const __filename = fileURLToPath(import.meta.url)
