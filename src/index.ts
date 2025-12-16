@@ -3,11 +3,16 @@ import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { createClient } from '@supabase/supabase-js'
+import 'dotenv/config'
 
-const supabase = createClient(
-  process.env.CH_APP_SUPABASE_URL,
-  process.env.CH_APP_SUPABASE_ANON_KEY
-)
+const SUPABASE_URL = process.env.CH_APP_SUPABASE_URL;
+const SUPABASE_KEY = process.env.CH_APP_SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -68,10 +73,14 @@ app.get('/notes', async (req, res) => {
     if (error) throw error
 
     res.json(notes)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: err.message })
+  } catch (err: unknown) {
+  if (err instanceof Error) {
+    res.status(500).json({ error: err.message });
+  } else {
+    res.status(500).json({ error: 'An unknown error occurred' });
   }
+}
+
 })
 
 
