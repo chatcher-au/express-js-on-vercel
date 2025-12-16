@@ -1,6 +1,13 @@
+
 import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -23,6 +30,7 @@ app.get('/', (req, res) => {
           <a href="/about">About</a>
           <a href="/api-data">API Data</a>
           <a href="/healthz">Health</a>
+          <a href="/notes">Health</a>
         </nav>
         <h1>Welcome to Express on Vercel 🚀</h1>
         <p>This is a minimal example without a database or forms.</p>
@@ -48,5 +56,23 @@ app.get('/api-data', (req, res) => {
 app.get('/healthz', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() })
 })
+
+
+// Notes
+app.get('/notes', async (req, res) => {
+  try {
+    const { data: notes, error } = await supabase
+      .from('notes')
+      .select('*')
+
+    if (error) throw error
+
+    res.json(notes)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err.message })
+  }
+})
+
 
 export default app
